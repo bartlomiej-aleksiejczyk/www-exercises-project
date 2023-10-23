@@ -23,5 +23,5 @@ class Osoba(models.Model):
     def __str__(self):
         return f"{self.imie} {self.nazwisko}"
     class Meta:
-        ordering = ["nazwisko"]
+        ordering = ["-nazwisko"]
         verbose_name_plural = "osoby"
