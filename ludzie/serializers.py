@@ -17,6 +17,12 @@ class StanowiskoSerializer(serializers.Serializer):
         return instance
 
 
+class StanowiskoTrueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stanowisko
+        fields = '__all__'
+
+
 class OsobaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Osoba

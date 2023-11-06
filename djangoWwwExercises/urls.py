@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("polls/", include("poolingExercise.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("ludzie/", include("ludzie.urls"))
 ]
