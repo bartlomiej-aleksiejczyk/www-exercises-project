@@ -14,7 +14,7 @@ def czy_nie_przyszlosc_miesiac(miesiac):
         raise ValidationError(f"{miesiac} jest pozniejszy niz terazniejszy miesiac - {current_month}.")
 
 def czy_literki(string):
-    if not re.search("^[^a-zA-Z]+$", string):
+    if not re.match("^[a-zA-Z0-9]+$", string):
         raise ValidationError(
             _("%(value)s is not alphanumeric"),
             params={"value": string},
