@@ -1,4 +1,7 @@
 from rest_framework import viewsets, status
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import authentication_classes, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Osoba
@@ -7,18 +10,77 @@ from .serializers import StanowiskoTrueSerializer
 from .serializers import OsobaSerializer
 
 
-class OsobaViewSet(viewsets.ModelViewSet):
-    queryset = Osoba.objects.all()
-    serializer_class = OsobaSerializer
+@api_view(['GET'])
+def osoba_list(request):
+    if request.method == 'GET':
+        osoby = Osoba.objects.all()
+        serializer = OsobaSerializer(osoby, many=True)
+        return Response(serializer.data)
 
-    def get_queryset(self):
-        queryset = Osoba.objects.all()
-        nazwa_query = self.request.query_params.get('nazwa', None)
-        if nazwa_query is not None:
-            print(nazwa_query)
-            queryset = queryset.filter(imie__icontains=nazwa_query)
-        return queryset
 
+@api_view(['GET'])
+def osoba_detail(request, pk):
+    try:
+        osoba = Osoba.objects.get(pk=pk)
+    except Osoba.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = OsobaSerializer(osoba)
+        return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def osoba_update(request, pk):
+    try:
+        osoba = Osoba.objects.get(pk=pk)
+    except Osoba.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = OsobaSerializer(osoba, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PATCH'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def osoba_partial_update(request, pk):
+    try:
+        osoba = Osoba.objects.get(pk=pk)
+    except Osoba.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = OsobaSerializer(osoba, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def osoba_delete(request, pk):
+    try:
+        osoba = Osoba.objects.get(pk=pk)
+    except Osoba.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    osoba.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def osoba_create(request):
+    serializer = OsobaSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class StanowiskoViewSet(viewsets.ModelViewSet):
     queryset = Stanowisko.objects.all()
