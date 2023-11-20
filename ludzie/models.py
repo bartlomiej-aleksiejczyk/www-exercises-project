@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 import datetime
 
@@ -35,11 +36,6 @@ class Osoba(models.Model):
                                        validators=[czy_nie_przyszlosc_miesiac])
     wlasciciel = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-    def create_auth_token(sender, instance=None, created=False, **kwargs):
-        if created:
-            Token.objects.create(user=instance)
-
     def save(self, *args, **kwargs):
         if self.data_dodania:
             self.miesiac_dodania = self.data_dodania.strftime("%B")
@@ -53,5 +49,9 @@ class Osoba(models.Model):
         verbose_name_plural = "osoby"
 
 
-for osoba in Osoba.objects.all():
-    Token.objects.get_or_create(user=osoba)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+
+

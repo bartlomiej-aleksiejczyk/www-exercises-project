@@ -1,4 +1,6 @@
+from django.contrib.auth import get_user_model
 from django.urls import include, path
+from rest_framework.authtoken.models import Token
 
 from ludzie import views
 from ludzie.routers import router
@@ -13,3 +15,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
 ]
+
+uzytkownicy = get_user_model()
+for user in uzytkownicy.objects.all():
+    Token.objects.get_or_create(user=user)

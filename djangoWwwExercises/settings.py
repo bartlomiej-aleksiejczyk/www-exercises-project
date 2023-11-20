@@ -54,6 +54,10 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
+DEFAULT_AUTHENTICATION_CLASSES = [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+
 ROOT_URLCONF = 'djangoWwwExercises.urls'
 
 TEMPLATES = [
