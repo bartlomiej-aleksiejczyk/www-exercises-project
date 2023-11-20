@@ -1,8 +1,14 @@
 from django.conf import settings
 from django.db import models
 import datetime
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
 from ludzie.validators import czy_nie_przyszlosc_miesiac
 from ludzie.validators import czy_literki
+
 
 class Stanowisko(models.Model):
     nazwa = models.CharField(max_length=60, null=False, blank=False)
@@ -29,6 +35,11 @@ class Osoba(models.Model):
                                        validators=[czy_nie_przyszlosc_miesiac])
     wlasciciel = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
+
     def save(self, *args, **kwargs):
         if self.data_dodania:
             self.miesiac_dodania = self.data_dodania.strftime("%B")
@@ -40,3 +51,7 @@ class Osoba(models.Model):
     class Meta:
         ordering = ["-nazwisko"]
         verbose_name_plural = "osoby"
+
+
+for osoba in Osoba.objects.all():
+    Token.objects.get_or_create(user=osoba)
