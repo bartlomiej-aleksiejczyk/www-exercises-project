@@ -1,6 +1,10 @@
+from django.contrib.auth.decorators import permission_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, generics
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, api_view, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -91,7 +95,6 @@ def osoba_create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class StanowiskoViewSet(viewsets.ModelViewSet):
     queryset = Stanowisko.objects.all()
     serializer_class = StanowiskoTrueSerializer
@@ -105,3 +108,21 @@ class StanowiskoMembersView(generics.ListAPIView):
     def get_queryset(self):
         stanowisko_id = self.kwargs['stanowisko_id']
         return Osoba.objects.filter(stanowisko_id=stanowisko_id)
+
+
+@permission_required('ludzie.view_osoba', raise_exception=True)
+def osoba_secured_view(request, pk):
+    try:
+        person = Osoba.objects.get(pk=pk)
+        return HttpResponse(f"Ten użytkownik nazywa się {person.imie}")
+    except Osoba.DoesNotExist:
+        return HttpResponse(f"W bazie nie ma użytkownika o id={pk}.")
+
+
+def osoba_secured_secured_view(request, pk):
+    osoba = get_object_or_404(Osoba, pk=pk)
+
+    if request.user.has_perm('ludzie.can_view_other_persons') or osoba.wlasciciel == request.user:
+        return HttpResponse(f"Ten użytkownik nazywa się {osoba.imie}")
+    else:
+        raise PermissionDenied("Nie masz se uprawnień.")
