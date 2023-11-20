@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 import datetime
 from ludzie.validators import czy_nie_przyszlosc_miesiac
@@ -26,6 +27,7 @@ class Osoba(models.Model):
     data_dodania = models.DateField(default=datetime.date.today, editable=False)
     miesiac_dodania = models.CharField(max_length=213, default=wez_miesiac_biezacy(),
                                        validators=[czy_nie_przyszlosc_miesiac])
+    wlasciciel = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if self.data_dodania:

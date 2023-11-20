@@ -25,6 +25,9 @@ def osoba_detail(request, pk):
     except Osoba.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    if request.user != osoba.wlasciciel:
+        return Response({'detail': 'Brak dostępu do tego zasobu.'}, status=status.HTTP_403_FORBIDDEN)
+
     if request.method == 'GET':
         serializer = OsobaSerializer(osoba)
         return Response(serializer.data)
@@ -45,6 +48,7 @@ def osoba_update(request, pk):
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['PATCH'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -60,6 +64,7 @@ def osoba_partial_update(request, pk):
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['DELETE'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -72,15 +77,20 @@ def osoba_delete(request, pk):
     osoba.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def osoba_create(request):
-    serializer = OsobaSerializer(data=request.data)
+    data = request.data.copy()
+    data['wlasciciel'] = request.user.id
+
+    serializer = OsobaSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class StanowiskoViewSet(viewsets.ModelViewSet):
     queryset = Stanowisko.objects.all()
