@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -95,3 +95,13 @@ def osoba_create(request):
 class StanowiskoViewSet(viewsets.ModelViewSet):
     queryset = Stanowisko.objects.all()
     serializer_class = StanowiskoTrueSerializer
+
+
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+class StanowiskoMembersView(generics.ListAPIView):
+    serializer_class = OsobaSerializer
+
+    def get_queryset(self):
+        stanowisko_id = self.kwargs['stanowisko_id']
+        return Osoba.objects.filter(stanowisko_id=stanowisko_id)

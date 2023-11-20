@@ -14,6 +14,7 @@ urlpatterns = [
     path('osoba/create/', views.osoba_create, name='osoba_create'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
+    path('stanowisko/<int:stanowisko_id>/members/', views.StanowiskoMembersView.as_view(), name='stanowisko_members'),
 ]
 
 uzytkownicy = get_user_model()
