@@ -9,7 +9,7 @@ class PersonModelTest(TestCase):
     def setUpTestData(cls):
         User.objects.create_user('username', 'email@example.com', 'password')
         Stanowisko.objects.create(nazwa='Tester ', opis='testuje aplikacje')
-        Osoba.objects.create(imie='Jan', nazwisko='kowalski', plec=2, stanowisko_id=1, wlasciciel_id=1)
+        Osoba.objects.create(imie='Jan', nazwisko='kowalski', plec=2, stanowisko_id=1, wlasciciel_id=1 )
 
     def test_first_name_label(self):
         person = Osoba.objects.get(id=1)
