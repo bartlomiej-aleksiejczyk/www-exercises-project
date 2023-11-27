@@ -95,6 +95,7 @@ def osoba_create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class StanowiskoViewSet(viewsets.ModelViewSet):
     queryset = Stanowisko.objects.all()
     serializer_class = StanowiskoTrueSerializer
