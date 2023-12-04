@@ -16,7 +16,3 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('stanowisko/<int:stanowisko_id>/members/', views.StanowiskoMembersView.as_view(), name='stanowisko_members'),
 ]
-
-uzytkownicy = get_user_model()
-for user in uzytkownicy.objects.all():
-    Token.objects.get_or_create(user=user)

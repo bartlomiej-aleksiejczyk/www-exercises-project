@@ -1,3 +1,5 @@
+import graphene
+from graphene_django import DjangoObjectType
 from rest_framework import viewsets, status, generics
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, api_view, permission_classes
@@ -105,3 +107,4 @@ class StanowiskoMembersView(generics.ListAPIView):
     def get_queryset(self):
         stanowisko_id = self.kwargs['stanowisko_id']
         return Osoba.objects.filter(stanowisko_id=stanowisko_id)
+
