@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from rest_framework.authtoken.models import Token
 
 from ludzie.models import Osoba, Stanowisko
 
@@ -17,3 +19,7 @@ class StanowiskoAdmin(admin.ModelAdmin):
     list_filter = ['nazwa']
 admin.site.register(Osoba, OsobaAdmin)
 admin.site.register(Stanowisko, StanowiskoAdmin)
+
+uzytkownicy = get_user_model()
+for user in uzytkownicy.objects.all():
+    Token.objects.get_or_create(user=user)

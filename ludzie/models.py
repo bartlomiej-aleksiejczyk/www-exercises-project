@@ -47,7 +47,10 @@ class Osoba(models.Model):
     class Meta:
         ordering = ["-nazwisko"]
         verbose_name_plural = "osoby"
-
+        permissions = [
+            ("can_view_other_persons", "Sees everyon"),
+            ("close_task", "Can remove a task by setting its status as closed"),
+        ]
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
